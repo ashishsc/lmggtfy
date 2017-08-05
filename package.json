@@ -1,0 +1,27 @@
+{
+  "name": "lmggtfy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.14.1"
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+    "start": "node build/server/app.js",
+    "build": "mkdir -p build && cp -r server build/server",
+    "clean": "rm -r build/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ashishsc/lmggtfy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ashishsc/lmggtfy/issues"
+  },
+  "homepage": "https://github.com/ashishsc/lmggtfy#readme"
+}
