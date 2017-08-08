@@ -4,13 +4,19 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "express": "^4.14.1"
+    "express": "^4.14.1",
+    "fs-extra": "^4.0.1"
   },
   "devDependencies": {
+    "@types/express": "^4.0.36",
+    "@types/node": "^8.0.19",
+    "nodemon": "^1.11.0"
   },
   "scripts": {
     "start": "node build/server/app.js",
-    "build": "mkdir -p build && cp -r server build/server",
+    "build": "mkdir -p build && tsc --p .",
+    "watch": "nodemon --watch server --exec npm run dev",
+    "dev": "npm run build && npm start",
     "clean": "rm -r build/"
   },
   "repository": {

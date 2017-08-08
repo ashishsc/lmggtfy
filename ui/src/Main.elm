@@ -1,55 +1,56 @@
 module Main exposing (..)
 
-import Html exposing (Html, text, div, img)
-import Html.Attributes exposing (src)
-
-
----- MODEL ----
-
-
-type alias Model =
-    {}
-
-
-init : ( Model, Cmd Msg )
-init =
-    ( {}, Cmd.none )
-
-
-
----- UPDATE ----
-
-
-type Msg
-    = NoOp
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    ( model, Cmd.none )
-
-
-
----- VIEW ----
-
-
-view : Model -> Html Msg
-view model =
-    div []
-        [ img [ src "/logo.svg" ] []
-        , div [] [ text "Your Elm App is working!" ]
-        ]
-
-
-
----- PROGRAM ----
+import Api
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Messages exposing (..)
 
 
 main : Program Never Model Msg
 main =
     Html.program
-        { view = view
-        , init = init
+        { init = init
         , update = update
-        , subscriptions = always Sub.none
+        , view = view
+        , subscriptions = \model -> Sub.none
         }
+
+
+type alias Model =
+    { repoSearch : String }
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        NoOp ->
+            ( model, Cmd.none )
+
+        RepoSearchUpdated search ->
+            ( { model | repoSearch = search }, Cmd.none )
+
+        SearchRepoClicked ->
+            -- TODO
+            ( model, Api.findRepos model.repoSearch )
+
+        ReposFetchCompleted (Ok repos) ->
+            Debug.log ("repos " ++ repos) ( model, Cmd.none )
+
+        ReposFetchCompleted (Err error) ->
+            Debug.log (toString error) ( model, Cmd.none )
+
+
+init : ( Model, Cmd Msg )
+init =
+    ( { repoSearch = "" }, Cmd.none )
+
+
+view : Model -> Html Msg
+view model =
+    main_ []
+        [ input
+            [ type_ "text", class "search-box", onInput RepoSearchUpdated ]
+            []
+        , button [ class "button", onClick SearchRepoClicked ] [ text "grep" ]
+        ]
