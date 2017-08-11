@@ -1,0 +1,13 @@
+{
+  "strict": true,
+  "compilerOptions": {
+    "outDir": "build",
+    "target": "esnext"
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

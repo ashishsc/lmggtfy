@@ -3,12 +3,20 @@
  */
 'use strict'
 
-const express = require('express');
+const express = require('express')
 const app = express()
-import { exec } from 'child_process';
+const { exec } = require('child_process')
 
 const API_PORT = process.env.API_PORT || 3069
 
+if (process.env.NODE_ENV !== 'production') {
+    app.use((req, res, next) => {
+        console.log("got here")
+        res.header('Access-Control-Allow-Origin', '*')
+        res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+        next()
+    })
+}
 app.get('/repos/:dir', (req, res) => {
     exec(`find ${req.params.dir} -name .git -type d -prune`,
         (error, repos, stderr) => {

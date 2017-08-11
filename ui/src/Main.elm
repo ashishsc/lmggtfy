@@ -18,7 +18,9 @@ main =
 
 
 type alias Model =
-    { repoSearch : String }
+    { repoSearch : String
+    , grepSearch : String
+    }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -31,7 +33,6 @@ update msg model =
             ( { model | repoSearch = search }, Cmd.none )
 
         SearchRepoClicked ->
-            -- TODO
             ( model, Api.findRepos model.repoSearch )
 
         ReposFetchCompleted (Ok repos) ->
@@ -40,17 +41,36 @@ update msg model =
         ReposFetchCompleted (Err error) ->
             Debug.log (toString error) ( model, Cmd.none )
 
+        GrepUpdated search ->
+            ( { model | grepSearch = search }, Cmd.none )
+
+        GrepClicked ->
+            ( model, Api.grep model.repoSearch model.grepSearch )
+
+        GrepFetchCompleted (Ok results) ->
+            Debug.log ("grep results: " ++ results) (model ! [])
+
+        GrepFetchCompleted (Err error) ->
+            Debug.log (toString error) ( model, Cmd.none )
+
 
 init : ( Model, Cmd Msg )
 init =
-    ( { repoSearch = "" }, Cmd.none )
+    ( { repoSearch = "", grepSearch = "" }, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
     main_ []
         [ input
-            [ type_ "text", class "search-box", onInput RepoSearchUpdated ]
+            [ type_ "text"
+            , class "search-box"
+            , onInput RepoSearchUpdated
+            ]
             []
-        , button [ class "button", onClick SearchRepoClicked ] [ text "grep" ]
+        , button
+            [ class "button"
+            , onClick SearchRepoClicked
+            ]
+            [ text "grep" ]
         ]

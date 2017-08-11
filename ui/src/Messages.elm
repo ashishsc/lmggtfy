@@ -8,3 +8,6 @@ type Msg
     | SearchRepoClicked
     | ReposFetchCompleted (Result Http.Error String)
     | RepoSearchUpdated String
+    | GrepClicked
+    | GrepUpdated String
+    | GrepFetchCompleted (Result Http.Error String)

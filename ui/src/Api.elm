@@ -24,3 +24,12 @@ findRepos dir =
             apiUrl ++ "/repos/" ++ dir
     in
     Http.send ReposFetchCompleted <| Http.getString reposUrl
+
+
+grep : String -> String -> Cmd Msg
+grep dir search =
+    let
+        grepUrl =
+            apiUrl ++ "/repos/" ++ dir ++ "/" ++ search
+    in
+    Http.send GrepFetchCompleted <| Http.getString grepUrl
