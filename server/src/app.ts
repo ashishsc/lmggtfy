@@ -4,14 +4,14 @@
 'use strict'
 
 const express = require('express')
-const app = express()
 const { exec } = require('child_process')
+const app = express()
 
 const API_PORT = process.env.API_PORT || 3069
 
 if (process.env.NODE_ENV !== 'production') {
     app.use((req, res, next) => {
-        console.log("got here")
+        // TODO Should this only allow access to specific ports? What about a docker container?
         res.header('Access-Control-Allow-Origin', '*')
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
         next()
@@ -23,20 +23,26 @@ app.get('/repos/:dir', (req, res) => {
             if (error || stderr) {
                 res.status(400).send(error || stderr)
             } else {
-                res.json({ dir: req.params.dir, repos })
+                res.json({
+                    dir: req.params.dir,
+                    repos: repos.split('\n').map(
+                        // Strip off the .git
+                        str => str.substr(0, str.length - 5)
+                    )
+                })
             }
         }
     )
 })
 
-app.get('/repos/:dir/:search', (req, res) => {
-    exec(`git grep ${req.params.search}`, { cwd: req.params.dir },
+app.get('/repos/:repo/:search', (req, res) => {
+    exec(`git grep ${req.params.search}`, { cwd: req.params.repo },
         (error, results, stderr) => {
             if (error || stderr) {
                 res.status(400).send(error || stderr)
             } else {
                 res.json({
-                    dir: req.params.dir,
+                    repo: req.params.repo,
                     search: req.params.search,
                     results,
                 })

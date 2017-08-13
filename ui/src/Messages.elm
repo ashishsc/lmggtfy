@@ -1,13 +1,14 @@
 module Messages exposing (..)
 
 import Http
+import Types exposing (..)
 
 
 type Msg
     = NoOp
     | SearchRepoClicked
-    | ReposFetchCompleted (Result Http.Error String)
+    | ReposFetchCompleted (Result Http.Error RepoSearchResult)
     | RepoSearchUpdated String
     | GrepClicked
     | GrepUpdated String
-    | GrepFetchCompleted (Result Http.Error String)
+    | GrepFetchCompleted (Result Http.Error GrepResult)

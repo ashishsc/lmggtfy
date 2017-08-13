@@ -2,8 +2,10 @@
   "strict": true,
   "compilerOptions": {
     "outDir": "build",
-    "target": "esnext"
+    "target": "esnext",
+    "sourceMap": true
   },
+  "compileOnSave": true,
   "include": [
     "src/**/*"
   ],

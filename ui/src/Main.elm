@@ -1,10 +1,10 @@
 module Main exposing (..)
 
 import Api
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html
 import Messages exposing (..)
+import Types exposing (..)
+import View exposing (view)
 
 
 main : Program Never Model Msg
@@ -17,12 +17,6 @@ main =
         }
 
 
-type alias Model =
-    { repoSearch : String
-    , grepSearch : String
-    }
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
@@ -33,44 +27,39 @@ update msg model =
             ( { model | repoSearch = search }, Cmd.none )
 
         SearchRepoClicked ->
-            ( model, Api.findRepos model.repoSearch )
+            ( { model | errors = [] }
+            , Api.findRepos model.repoSearch
+            )
 
-        ReposFetchCompleted (Ok repos) ->
-            Debug.log ("repos " ++ repos) ( model, Cmd.none )
+        ReposFetchCompleted (Ok repoSearchResult) ->
+            { model | repos = repoSearchResult.repos } ! []
 
         ReposFetchCompleted (Err error) ->
-            Debug.log (toString error) ( model, Cmd.none )
+            { model | errors = toString error :: model.errors } ! []
 
         GrepUpdated search ->
             ( { model | grepSearch = search }, Cmd.none )
 
         GrepClicked ->
-            ( model, Api.grep model.repoSearch model.grepSearch )
+            ( { model | errors = [] }
+            , Api.grep model.repoSearch model.grepSearch
+            )
 
-        GrepFetchCompleted (Ok results) ->
-            Debug.log ("grep results: " ++ results) (model ! [])
+        GrepFetchCompleted (Ok grepResults) ->
+            { model | grepResults = grepResults.results } ! []
 
         GrepFetchCompleted (Err error) ->
-            Debug.log (toString error) ( model, Cmd.none )
+            { model | errors = toString error :: model.errors } ! []
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { repoSearch = "", grepSearch = "" }, Cmd.none )
-
-
-view : Model -> Html Msg
-view model =
-    main_ []
-        [ input
-            [ type_ "text"
-            , class "search-box"
-            , onInput RepoSearchUpdated
-            ]
-            []
-        , button
-            [ class "button"
-            , onClick SearchRepoClicked
-            ]
-            [ text "grep" ]
-        ]
+    ( { repoSearch = ""
+      , grepSearch = ""
+      , errors = []
+      , repos = []
+      , selectedRepo = Nothing
+      , grepResults = []
+      }
+    , Cmd.none
+    )
