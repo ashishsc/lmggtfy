@@ -31,11 +31,18 @@ update msg model =
             , Api.findRepos model.repoSearch
             )
 
-        ReposFetchCompleted (Ok repoSearchResult) ->
-            { model | repos = repoSearchResult.repos } ! []
+        ReposFetchCompleted (Ok { repos }) ->
+            { model
+                | reposFound = not (List.isEmpty repos)
+                , repos = repos
+            }
+                ! []
 
         ReposFetchCompleted (Err error) ->
             { model | errors = toString error :: model.errors } ! []
+
+        RepoSelected selected ->
+            { model | selectedRepo = Just selected } ! []
 
         GrepUpdated search ->
             ( { model | grepSearch = search }, Cmd.none )
@@ -59,6 +66,7 @@ init =
       , errors = []
       , repos = []
       , selectedRepo = Nothing
+      , reposFound = True
       , grepResults = []
       }
     , Cmd.none

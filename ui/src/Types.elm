@@ -4,6 +4,7 @@ module Types exposing (..)
 type alias Model =
     { repoSearch : String
     , repos : List String
+    , reposFound : Bool
     , selectedRepo : Maybe String
     , grepSearch : String
     , grepResults : List String

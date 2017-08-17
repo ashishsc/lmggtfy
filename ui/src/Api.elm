@@ -28,7 +28,11 @@ grep : String -> String -> Cmd Msg
 grep repo search =
     let
         grepUrl =
-            apiUrl ++ "/repos/" ++ repo ++ "/" ++ search
+            apiUrl
+                ++ "/grep/"
+                ++ Http.encodeUri repo
+                ++ "/"
+                ++ Http.encodeUri search
     in
     Http.get grepUrl grepResultDecoder
         |> Http.send GrepFetchCompleted

@@ -1,12 +1,18 @@
-body {
-  font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
-  font-size: 30px;
-  margin: 0;
-  text-align: center;
-  color: #293c4b;
+main {
+    display: flex;
+    justify-content: center;
+    flex-direction: column; 
+}
+.search-box {
+    width: 30%;
+    height: 10%;
 }
 
-img {
-  margin: 20px 0;
-  max-width: 200px;
+.repo-select {
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+}
+.repo-select li {
+    list-style-type: none;
 }

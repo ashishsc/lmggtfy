@@ -9,6 +9,7 @@ type Msg
     | SearchRepoClicked
     | ReposFetchCompleted (Result Http.Error RepoSearchResult)
     | RepoSearchUpdated String
+    | RepoSelected String
     | GrepClicked
     | GrepUpdated String
     | GrepFetchCompleted (Result Http.Error GrepResult)

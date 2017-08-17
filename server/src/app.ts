@@ -28,6 +28,8 @@ app.get('/repos/:dir', (req, res) => {
                     repos: repos.split('\n').map(
                         // Strip off the .git
                         str => str.substr(0, str.length - 5)
+                            // TODO find out why
+                            .filter(str => str.length > 0)
                     )
                 })
             }
@@ -35,7 +37,8 @@ app.get('/repos/:dir', (req, res) => {
     )
 })
 
-app.get('/repos/:repo/:search', (req, res) => {
+app.get('/grep/:repo/:search', (req, res) => {
+    console.log('got here:', req.params)
     exec(`git grep ${req.params.search}`, { cwd: req.params.repo },
         (error, results, stderr) => {
             if (error || stderr) {

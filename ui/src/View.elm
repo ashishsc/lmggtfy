@@ -39,35 +39,62 @@ searchControls : Model -> Html Msg
 searchControls model =
     let
         repoSearch =
-            [ input
-                [ type_ "text"
-                , class "search-box"
-                , onInput RepoSearchUpdated
+            div []
+                [ input
+                    [ type_ "text"
+                    , class "search-box"
+                    , onInput RepoSearchUpdated
+                    ]
+                    []
+                , button
+                    [ class "button"
+                    , onClick SearchRepoClicked
+                    ]
+                    [ text "Find Repos" ]
                 ]
-                []
-            , button
-                [ class "button"
-                , onClick SearchRepoClicked
-                ]
-                [ text "Find Repos" ]
-            ]
+
+        repoSelector =
+            ul [ class "repo-select" ]
+                (List.map
+                    (\repo ->
+                        li []
+                            [ button
+                                [ onClick (RepoSelected repo) ]
+                                [ text repo ]
+                            ]
+                    )
+                    model.repos
+                )
 
         grep =
-            [ input
-                [ type_ "text"
-                , class "search-box"
-                , onInput GrepUpdated
+            div []
+                [ input
+                    [ type_ "text"
+                    , class "search-box"
+                    , onInput GrepUpdated
+                    ]
+                    []
+                , button
+                    [ class "button"
+                    , onClick GrepClicked
+                    ]
+                    [ text "git grep" ]
                 ]
-                []
-            , button
-                [ class "button"
-                , onClick GrepClicked
-                ]
-                [ text "git grep" ]
-            ]
     in
     if List.isEmpty model.repos then
-        section [ class "search-controls" ] repoSearch
+        if model.reposFound then
+            section [ class "search-controls" ] [ repoSearch ]
+        else
+            section [ class "search-controls" ]
+                [ repoSearch
+                , div [] [ text "No repos found" ]
+                ]
     else
-        section [ class "search-controls" ]
-            (List.concat [ repoSearch, grep ])
+        case model.selectedRepo of
+            Just selected ->
+                section [ class "search-controls" ]
+                    [ repoSearch, repoSelector, grep ]
+
+            Nothing ->
+                section [ class "search-controls" ]
+                    [ repoSearch, repoSelector ]
