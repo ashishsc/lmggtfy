@@ -25,12 +25,12 @@ app.get('/repos/:dir', (req, res) => {
             } else {
                 res.json({
                     dir: req.params.dir,
-                    repos: repos.split('\n').map(
-                        // Strip off the .git
-                        str => str.substr(0, str.length - 5)
-                            // TODO find out why
-                            .filter(str => str.length > 0)
-                    )
+                    repos: repos.split('\n')
+                        // eliminate the last empty string because find
+                        // terminates with a new line
+                        .filter(str => str.length > 0)
+                        // Strip of the .git
+                        .map(str => str.substr(0, str.length - 5))
                 })
             }
         }
@@ -38,10 +38,12 @@ app.get('/repos/:dir', (req, res) => {
 })
 
 app.get('/grep/:repo/:search', (req, res) => {
-    console.log('got here:', req.params)
     exec(`git grep ${req.params.search}`, { cwd: req.params.repo },
         (error, results, stderr) => {
+            console.log({ error, results, stderr })
             if (error || stderr) {
+                console.error('error ', error);
+                console.error('stderr', stderr);
                 res.status(400).send(error || stderr)
             } else {
                 res.json({

@@ -48,9 +48,14 @@ update msg model =
             ( { model | grepSearch = search }, Cmd.none )
 
         GrepClicked ->
-            ( { model | errors = [] }
-            , Api.grep model.repoSearch model.grepSearch
-            )
+            case model.selectedRepo of
+                Just repo ->
+                    ( { model | errors = [] }
+                    , Api.grep repo model.grepSearch
+                    )
+
+                Nothing ->
+                    ( model, Cmd.none )
 
         GrepFetchCompleted (Ok grepResults) ->
             { model | grepResults = grepResults.results } ! []
