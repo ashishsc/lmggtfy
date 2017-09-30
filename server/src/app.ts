@@ -18,40 +18,35 @@ if (process.env.NODE_ENV !== 'production') {
     })
 }
 app.get('/repos/:dir', (req, res) => {
-    exec(`find ${req.params.dir} -name .git -type d -prune`,
-        (error, repos, stderr) => {
-            if (error || stderr) {
-                res.status(400).send(error || stderr)
-            } else {
-                res.json({
-                    dir: req.params.dir,
-                    repos: repos.split('\n')
-                        // eliminate the last empty string because find
-                        // terminates with a new line
-                        .filter(str => str.length > 0)
-                        // Strip of the .git
-                        .map(str => str.substr(0, str.length - 5))
-                })
-            }
+    const dir = req.params.dir.endsWith('/') ? req.params.dir : req.params.dir + '/'
+    exec(`find ${dir} -name .git -type d -prune`,
+        (error:Error, repos:string, stderr:string) => {
+            res.json({
+                // permission denied or other errors may occur
+                errors: [error, stderr],
+                dir,
+                repos: repos.split('\n')
+                    // eliminate the last empty string because find
+                    // terminates with a new line
+                    .filter(str => str.length > 0)
+                    // supress Permission denied
+                    .filter(str => !str.endsWith(': Permission denied'))
+                    // Strip of the .git
+                    .map(str => str.substr(0, str.length - 5))
+            })
         }
     )
 })
 
 app.get('/grep/:repo/:search', (req, res) => {
-    exec(`git grep ${req.params.search}`, { cwd: req.params.repo },
+    exec(`git grep -n ${req.params.search}`, { cwd: req.params.repo },
         (error, results, stderr) => {
-            console.log({ error, results, stderr })
-            if (error || stderr) {
-                console.error('error ', error);
-                console.error('stderr', stderr);
-                res.status(400).send(error || stderr)
-            } else {
-                res.json({
-                    repo: req.params.repo,
-                    search: req.params.search,
-                    results: results.split('\n'),
-                })
-            }
+            res.json({
+                errors: [error, stderr],
+                repo: req.params.repo,
+                search: req.params.search,
+                results: results.split('\n').filter(str => str.length > 0),
+            })
         }
     )
 })
