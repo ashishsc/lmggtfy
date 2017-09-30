@@ -2,7 +2,8 @@ module Types exposing (..)
 
 
 type alias Model =
-    { repoSearch : String
+    { isLoading : Bool
+    , repoSearch : String
     , repos : List String
     , reposFound : Bool
     , selectedRepo : Maybe String

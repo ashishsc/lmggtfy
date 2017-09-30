@@ -11,7 +11,9 @@ view : Model -> Html Msg
 view model =
     let
         layout =
-            if List.isEmpty model.errors then
+            if model.isLoading then
+                [ loading ]
+            else if List.isEmpty model.errors then
                 [ searchControls model ]
             else
                 [ errors model.errors, searchControls model ]
@@ -27,3 +29,8 @@ errors messages =
             (\message -> div [ class "error-msg" ] [ text message ])
             messages
         )
+
+
+loading : Html msg
+loading =
+    div [] [ i [ class "fa fa-spinner" ] [] ]

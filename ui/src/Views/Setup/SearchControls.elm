@@ -22,6 +22,7 @@ searchControls model =
                     [ type_ "text"
                     , class "search-box"
                     , onInput RepoSearchUpdated
+                    , placeholder "Enter an absolute path"
                     ]
                     []
                 , button

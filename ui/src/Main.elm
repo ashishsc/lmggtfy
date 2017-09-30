@@ -27,7 +27,7 @@ update msg model =
             ( { model | repoSearch = search }, Cmd.none )
 
         SearchRepoClicked ->
-            ( { model | errors = [] }
+            ( { model | errors = [], isLoading = True }
             , Api.findRepos model.repoSearch
             )
 
@@ -35,11 +35,16 @@ update msg model =
             { model
                 | reposFound = not (List.isEmpty repos)
                 , repos = repos
+                , isLoading = False
             }
                 ! []
 
         ReposFetchCompleted (Err error) ->
-            { model | errors = toString error :: model.errors } ! []
+            { model
+                | errors = toString error :: model.errors
+                , isLoading = False
+            }
+                ! []
 
         RepoSelected selected ->
             { model | selectedRepo = Just selected } ! []
@@ -50,7 +55,7 @@ update msg model =
         GrepClicked ->
             case model.selectedRepo of
                 Just repo ->
-                    ( { model | errors = [] }
+                    ( { model | errors = [], isLoading = True }
                     , Api.grep repo model.grepSearch
                     )
 
@@ -58,15 +63,16 @@ update msg model =
                     ( model, Cmd.none )
 
         GrepFetchCompleted (Ok grepResults) ->
-            { model | grepResults = grepResults.results } ! []
+            { model | grepResults = grepResults.results, isLoading = False } ! []
 
         GrepFetchCompleted (Err error) ->
-            { model | errors = toString error :: model.errors } ! []
+            { model | errors = toString error :: model.errors, isLoading = False } ! []
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( { repoSearch = ""
+    ( { isLoading = False
+      , repoSearch = ""
       , grepSearch = ""
       , errors = []
       , repos = []

@@ -49,7 +49,7 @@ app.get('/grep/:repo/:search', (req, res) => {
                 res.json({
                     repo: req.params.repo,
                     search: req.params.search,
-                    results,
+                    results: results.split('\n'),
                 })
             }
         }
