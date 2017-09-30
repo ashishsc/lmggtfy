@@ -8,65 +8,77 @@ import String
 import Types exposing (..)
 
 
+rippleButtonClass : String
+rippleButtonClass =
+    "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"
+
+
 repoSearchResults : Model -> Html Msg
 repoSearchResults model =
     section [ class "search-results" ] []
 
 
+repoSearch : Html Msg
+repoSearch =
+    div []
+        [ input
+            [ type_ "text"
+            , class "search-box"
+            , onInput RepoSearchUpdated
+            , placeholder "Enter an absolute path"
+            ]
+            []
+        , button
+            [ class rippleButtonClass, onClick SearchRepoClicked ]
+            [ text "Find Repos" ]
+        ]
+
+
+repoSelector : List String -> String -> Html Msg
+repoSelector repos repoSearch =
+    ul [ class "repo-select" ]
+        (List.map
+            (\repo ->
+                li []
+                    [ button
+                        [ onClick (RepoSelected repo)
+                        , class rippleButtonClass
+                        ]
+                        [ text
+                            -- Strip out the repoSearch
+                            (String.slice (String.length repoSearch) (String.length repo) repo)
+                        ]
+                    ]
+            )
+            repos
+        )
+
+
+grep : Html Msg
+grep =
+    div []
+        [ input
+            [ type_ "text"
+            , class "search-box"
+            , onInput GrepUpdated
+            ]
+            []
+        , button
+            [ class rippleButtonClass
+            , onClick GrepClicked
+            ]
+            [ text "git grep" ]
+        ]
+
+
+grepResults : List String -> Html Msg
+grepResults results =
+    ul [ class "grep-results" ]
+        (List.map (\result -> li [] [ text result ]) results)
+
+
 searchControls : Model -> Html Msg
 searchControls model =
-    let
-        repoSearch =
-            div []
-                [ input
-                    [ type_ "text"
-                    , class "search-box"
-                    , onInput RepoSearchUpdated
-                    , placeholder "Enter an absolute path"
-                    ]
-                    []
-                , button
-                    [ class "button"
-                    , onClick SearchRepoClicked
-                    ]
-                    [ text "Find Repos" ]
-                ]
-
-        repoSelector =
-            ul [ class "repo-select" ]
-                (List.map
-                    (\repo ->
-                        li []
-                            [ button
-                                [ onClick (RepoSelected repo) ]
-                                [ text
-                                    -- Strip out the repoSearch and leading /
-                                    (String.slice
-                                        (String.length model.repoSearch + 1)
-                                        (String.length repo)
-                                        repo
-                                    )
-                                ]
-                            ]
-                    )
-                    model.repos
-                )
-
-        grep =
-            div []
-                [ input
-                    [ type_ "text"
-                    , class "search-box"
-                    , onInput GrepUpdated
-                    ]
-                    []
-                , button
-                    [ class "button"
-                    , onClick GrepClicked
-                    ]
-                    [ text "git grep" ]
-                ]
-    in
     if List.isEmpty model.repos then
         if model.reposFound then
             section [ class "search-controls" ] [ repoSearch ]
@@ -79,8 +91,12 @@ searchControls model =
         case model.selectedRepo of
             Just selected ->
                 section [ class "search-controls" ]
-                    [ repoSearch, repoSelector, grep ]
+                    [ repoSearch
+                    , repoSelector model.repos model.repoSearch
+                    , grep
+                    , grepResults model.grepResults
+                    ]
 
             Nothing ->
                 section [ class "search-controls" ]
-                    [ repoSearch, repoSelector ]
+                    [ repoSearch, repoSelector model.repos model.repoSearch ]

@@ -7,6 +7,20 @@ import Types exposing (..)
 import Views.Setup.SearchControls exposing (searchControls)
 
 
+pageHeader : Html msg
+pageHeader =
+    div
+        [ class "mdl-layout mdl-js-layout mdl-layout--fixed-header" ]
+        [ header [ class "mdl-layout__header" ]
+            [ div [ class "mdl-layout__header-row" ]
+                [ span
+                    [ class "mdl-layout-title" ]
+                    [ text "Let Me Grep That For You - Create" ]
+                ]
+            ]
+        ]
+
+
 view : Model -> Html Msg
 view model =
     let
@@ -18,7 +32,7 @@ view model =
             else
                 [ errors model.errors, searchControls model ]
     in
-    main_ [] layout
+    main_ [] (pageHeader :: layout)
 
 
 errors : List String -> Html Msg
