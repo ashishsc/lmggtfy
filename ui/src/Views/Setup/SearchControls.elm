@@ -25,7 +25,7 @@ repoSearch =
             [ type_ "text"
             , class "search-box"
             , onInput RepoSearchUpdated
-            , placeholder "Enter an absolute path"
+            , placeholder "Enter a search path"
             ]
             []
         , button

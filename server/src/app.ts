@@ -48,7 +48,7 @@ app.get("/repos/:dir", (req, res) => {
 app.get("/grep/:repo/:search", (req, res) => {
     exec(
         `git grep -n ${req.params.search}`,
-        { cwd: req.params.repo },
+        { cwd: process.cwd()},
         (error, results, stderr) => {
             res.json({
                 errors: [error, stderr],
